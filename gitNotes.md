@@ -10,7 +10,12 @@ git config --list
 
 ## Start a new repository
 mkdir -p *newRepoName* && cd $_
+echo "# gitNotes" >> README.md
 git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/lijantropique/*newRepoName*.git
+git push -u origin master
 git status
 
 ## Clone existing repository
