@@ -10,7 +10,7 @@ git config --list
 
 ## Start a new repository
 mkdir -p *newRepoName* && cd $_
-echo "# gitNotes" >> README.md
+echo "# *newRepoName*" >> README.md
 git init
 git add .
 git commit -m "Initial commit"
@@ -21,7 +21,7 @@ git status
 ## Clone existing repository
 git clone *repoAddress* [*repoNewName* && cd $_ ]
 example:
-git clone https://github.com/lijantropique/shablona.git NewProject
+git clone https://github.com/lijantropique/shablona.git newRepoName && cd $_
 (if optional newRepoName is not provided, cd to folder in subsequent step)
 git status
 
@@ -32,7 +32,7 @@ git log [-p]          -> detailed explanation of changes
 git log [--stat] [-p] -> both additional info + detailed explanation
 git log [-p] [-w]     -> detailed explanation of changes ignoring whitespaces changes
 
-git log [*flags*] *SHA*   ->shows history up to that message
+git log [*flags*] *SHA*   -> shows history up to that message
 git shows                 -> display the most recent commit
 git shows [*flags*] *SHA* -> display only that commit
 
@@ -46,29 +46,102 @@ git reset              -> unstage all the files NOTE: --mixed provided as defaul
 git commit -m "*commitMessage*"
 alternatively:
 git commit     -> wait for atom to open for adding message
-Note:  "Initial commit" is de facto comment for the very first commit.
+NOTE:  "Initial commit" is de facto comment for the very first commit.
 The commit message should be <= 50 lines and tell what the commit does, not how or why. Always use imperative, capital the subject and if you need to use
 and probably it would be better to have two commits.
 check: https://chris.beams.io/posts/git-commit/
 
 ## Difference
-git diff        ->changes made but not **staged/committed** yet
+git diff        -> changes made but not **staged/committed** yet
 
 
 ## Ignore files
 if the file hasn't been tracked yet ...
 echo *fileToIgnore* > .gitignore (not considered for staging with ".")
-if the file has been tracked:
 
+if the file has been tracked:
 git rm --cached *fileToIgnore* [-f]
 echo *fileToIgnore* > .gitignore
 
-Note: if the file has been modified since the last commit,
+NOTE: if the file has been modified since the last commit,
 it will complain so either the rm needs "-f", to force the removal or commit the changes and then, stop tracking
 
-.gitignore understands globbing: dir1/\*.jpg, would ignore all the jpg files in dir1
+.gitignore understands globbing:
+dir1/\*.jpg, would ignore all the jpg files in dir1
 check: https://git-scm.com/docs/gitignore
 
+## Tagging
+to add an annotated tag
+git tag -a *tagName* -m  "*tagMessage*" [*SHA*]
+If the -m option is not included, git will open the editor to provide the tag message.
+If the digest is not provided, it would tag the latest commit.
+NOTE: since version 2.13, git log includes --decorate. If previous versions it would be required to add this option to see the tags.
 
-TODO: tagging, branching and merge
+The tag information could be obtained using shows
+git show *tagName*
+
+to delete a tag:
+git tag -d *tagName*
+
+if lightweight tags (kind of temporary or private tags) are required:
+git tag -lw *tagName*
+NOTE: don't supply -a,-s or -m option.
+checck: https://stackoverflow.com/questions/11514075
+
+
+## Branching
+git branch *branchName* [*SHA*]
+git checkout *branchName*
+
+to create and change to the branchName
+git checkout -b *branchName* [*SHA*]
+
+if ths diggest is not provided, the branch would be based on the current HEAD position. Otherwise, it would be created on the commit specified by the diggest.
+
+git branch   -> all the branches and the active branch
+
+to delete a branch:
+git branch -d *branchName*
+NOTE: it is not possible to delete the current branch. It is required first to move (checkout) to another branch and then delete.
+
+git normally won't delete branches with unique commits (commits that are not included in any other branch), because those commits would be lost. However, to force deletion:
+git branch -D *branchName*
+
+to see all branches at once:
+git log --oneline --graph --all
+
+
+## Merging
+first checkout the branch used as basis for the merge
+git checkout *branchMergeBasis*
+git merge *branchMergeOther*
+
+Git will look back at the history for a common commit between the two branches. Once it has found it, it would combine the lines of code and add the commit on the basis (branchMergeBasis). The other one (branchMergeOther) will remain as it was before.
+
+It the branch to merge (branchMergeOther) is ahead of the base, it would be a fast forward merge. Otherwise it would be a regular merge.
+
+Git will open the code editor to provide a message, but there is a default msg that is just fine in most of the cases.
+
+
+## Merge Conflicts
+Sometimes there are conflicts between the branches (i.e., each branch has a different status for the same line) and instead of choosing one, Git will flag those issues. NOTE: actually there are commands (-s ours, -s theirs) that can be used to force one branch.
+
+At this point it would be possible to abort the merge
+git merge --abort
+
+Or resolve the conflicts.  n the global configuration file, it was declared that we would like to use the diff3 style, which presents conflicts as follows:
+
+<<<<<<<<<<  HEAD
+...       -> everything here is what is in the current branch
+||||||||||  merged common ancestors
+...       -> everything here is what was before (where the two branches had a common ancestor)
+==========  
+...       -> everything here is what is in branchMergeOther
+.>>>>>>>>>> *branchMergeOther*
+
+**merge conflicts must be resolved by hand on the editor, by removing the
+conflict indicators (<<<<< |||| ==== >>>>) and selecting which line to keep**
+
+after the conflict is resolve, save, add & commit (leave default merge commit message).
+
 TODO: amend, revert, reset
