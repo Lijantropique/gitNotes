@@ -131,7 +131,7 @@ git merge --abort
 
 Or resolve the conflicts.  n the global configuration file, it was declared that we would like to use the diff3 style, which presents conflicts as follows:
 
-<<<<<<<<<<  HEAD
+.<<<<<<<<<<  HEAD
 ...       -> everything here is what is in the current branch
 ||||||||||  merged common ancestors
 ...       -> everything here is what was before (where the two branches had a common ancestor)
@@ -144,4 +144,38 @@ conflict indicators (<<<<< |||| ==== >>>>) and selecting which line to keep**
 
 after the conflict is resolve, save, add & commit (leave default merge commit message).
 
-TODO: amend, revert, reset
+## Change the last commit
+git commit --amend
+NOTE: if any file is modified, saved and staged, the amend option would add that file to the commit. Otherwise, it would only change the last commit message.
+
+## Reverting a commit
+git revert *SHA*
+it would do exactly the opposite of the changes of that specific commit (e.g., if a line was added, it would be deleted), as a new commit.
+
+## Reset a commit
+** This command will erase a commit!!! (small backup of 30d with git reflog)**
+
+
+To reset a commit it is required to use relative references:
+^   -> parent
+~n  -> nth parent
+
+HEAD^ / HEAD~ / HEAD~1  -> parent commit
+HEAD^^ / HEAD~2         -> grandparent commit
+HEAD^^^ / HEAD~3        -> great-grandparent commit
+
+with merge, there are two parents
+^   -> first parent
+^2  -> second parent
+
+there are three flags for reset
+* --mixed (default) -> the commit content would be moved to the working directory
+* --soft            -> the commit content would be moved to the staging directory
+* --hard            -> the commit content would be discarded
+
+git reset [--flag] *relativeRefCommit*
+
+
+<!-- ====================== -->
+TODO: add git remote set-head origin -d
+check https://www.kernel.org/pub/software/scm/git/docs/git-remote.html
