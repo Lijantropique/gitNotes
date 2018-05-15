@@ -7,6 +7,7 @@ git config --global color.ui auto
 git config --global merge.conflictstyle diff3
 git config --global core.editor "atom --wait"
 git config --list
+git config --global --add alias.root '!pwd' # if git colours are not working
 
 ## Start a new repository
 mkdir -p *newRepoName* && cd $_
@@ -17,6 +18,7 @@ git commit -m "Initial commit"
 git remote add origin https://github.com/lijantropique/*newRepoName*.git
 git push -u origin master
 git status
+git pull origin master -> to update local repo based on remote repo. Look for options --rebase & -u
 
 ## Clone existing repository
 git clone *repoAddress* [*repoNewName* && cd $_ ]
